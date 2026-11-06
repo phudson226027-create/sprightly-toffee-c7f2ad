@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Customer requests · Next Layer</title>
+  <style>
+    :root { --ink:#18202b; --muted:#687386; --paper:#f6f7fb; --orange:#ff7138; --orange-dark:#e95d27; --line:#e7eaf0; --green:#1f9d63; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--paper); }
+    header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 22px; background:#fff; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:2; }
+    header .logo { font-weight:900; letter-spacing:.04em; color:var(--ink); text-decoration:none; font-size:1rem; }
+    header .logo:hover { color:var(--ink); }
+    .logo span { color:var(--orange); }
+    .logo small { color:var(--muted); font-weight:700; letter-spacing:0; margin-left:8px; }
+    header a, .ghost { color:var(--muted); font-weight:800; text-decoration:none; font-size:.9rem; background:none; border:0; cursor:pointer; font-family:inherit; }
+    header a:hover, .ghost:hover { color:var(--orange-dark); }
+    main { max-width:900px; margin:0 auto; padding:26px 18px 60px; }
+    .lock { max-width:380px; margin:12vh auto 0; background:#fff; border:1px solid var(--line); border-radius:18px; padding:26px; }
+    .lock h1 { margin:0 0 6px; font-size:1.35rem; }
+    .lock p { margin:0 0 18px; color:var(--muted); font-size:.92rem; }
+    label { display:flex; flex-direction:column; gap:6px; font-size:.85rem; font-weight:700; color:var(--muted); }
+    input { font:inherit; font-weight:400; color:var(--ink); padding:11px 12px; border:1px solid var(--line); border-radius:10px; }
+    input:focus { outline:2px solid var(--orange); border-color:transparent; }
+    .btn { border:0; border-radius:999px; background:var(--orange); color:#fff; font:inherit; font-weight:900; padding:11px 18px; cursor:pointer; }
+    .btn:hover { background:var(--orange-dark); }
+    .lock .btn { width:100%; margin-top:14px; }
+    .err { color:#c2410c; font-size:.85rem; font-weight:700; min-height:1.2em; margin:10px 0 0; }
+    .top { display:flex; flex-wrap:wrap; align-items:end; justify-content:space-between; gap:14px; margin-bottom:18px; }
+    .top h1 { margin:0; font-size:1.6rem; }
+    .top p { margin:4px 0 0; color:var(--muted); font-size:.92rem; }
+    .tabs { display:flex; flex-wrap:wrap; gap:6px; }
+    .tab { border:1px solid var(--line); background:#fff; border-radius:999px; padding:7px 13px; font:inherit; font-size:.85rem; font-weight:800; color:var(--muted); cursor:pointer; }
+    .tab.on { background:var(--ink); border-color:var(--ink); color:#fff; }
+    .tab b { font-weight:900; margin-left:4px; opacity:.75; }
+    .tab .red { display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 6px; margin-left:6px; border-radius:999px; background:#e11d2e; color:#fff; font-size:.75rem; font-weight:900; opacity:1; }
+    .item { background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px 20px; margin-bottom:12px; border-left:5px solid var(--orange); }
+    .item.done { border-left-color:var(--line); opacity:.72; }
+    .row { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 14px; }
+    .badge { display:inline-block; font-size:.72rem; font-weight:900; letter-spacing:.05em; text-transform:uppercase; padding:4px 9px; border-radius:999px; background:#fff1e9; color:var(--orange-dark); }
+    .badge.msg { background:#eaf2ff; color:#2357b5; }
+    .badge.prize { background:#fff6d6; color:#9a6b00; }
+    .badge.ok { background:#e6f6ee; color:var(--green); }
+    .when { color:var(--muted); font-size:.82rem; font-weight:700; }
+    .who { margin:10px 0 2px; font-weight:900; font-size:1.05rem; }
+    .contact { font-size:.9rem; }
+    .contact a { color:var(--orange-dark); font-weight:700; margin-right:12px; }
+    .lines { margin:12px 0 0; padding:0; list-style:none; border-top:1px dashed var(--line); }
+    .lines li { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px dashed var(--line); font-size:.92rem; }
+    .lines .opt { display:block; color:var(--muted); font-size:.82rem; margin-top:2px; }
+    .total { display:flex; justify-content:space-between; font-weight:900; padding-top:8px; }
+    .msgtext { margin:12px 0 0; padding:12px 14px; background:var(--paper); border-radius:12px; white-space:pre-wrap; word-break:break-word; font-size:.93rem; line-height:1.45; }
+    .note-label { font-size:.78rem; font-weight:900; color:var(--muted); margin:12px 0 -6px; text-transform:uppercase; letter-spacing:.05em; }
+    .actions { display:flex; gap:8px; margin-top:14px; }
+    .small { border:1px solid var(--line); background:#fff; border-radius:999px; padding:7px 13px; font:inherit; font-size:.82rem; font-weight:800; cursor:pointer; color:var(--ink); }
+    .small:hover { border-color:var(--orange); }
+    .small.danger:hover { border-color:#dc2626; color:#dc2626; }
+    .empty { text-align:center; color:var(--muted); background:#fff; border:1px dashed var(--line); border-radius:16px; padding:40px 20px; }
+    [hidden] { display:none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="/" title="Back to the home page">NEXT<span>LAYER</span><small>Owner only</small></a>
+    <div>
+      <button class="ghost" id="refresh" type="button" hidden>Refresh</button>
+      <button class="ghost" id="lock-btn" type="button" hidden>Lock</button>
+      <a href="/">← Back to shop</a>
+    </div>
+  </header>
+
+  <main>
+    <form class="lock" id="lock">
+      <h1>Customer requests</h1>
+      <p>Enter the edit password to see orders and messages from customers.</p>
+      <label>Password<input id="pw" type="password" autocomplete="current-password" required></label>
+      <button class="btn" type="submit">Unlock</button>
+      <p class="err" id="lock-err" role="alert"></p>
+    </form>
+
+    <section id="panel" hidden>
+      <div class="top">
+        <div>
+          <h1>Customer requests</h1>
+          <p id="summary">Loading…</p>
+        </div>
+        <div class="tabs" id="tabs"></div>
+      </div>
+      <div id="list"></div>
+    </section>
+  </main>
+
+  <script>
+    const PW_KEY = 'printforge-admin-pw';
+    let password = '';
+    let rows = [];
+    let filter = 'new';
+
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const money = n => '$' + Number(n || 0).toFixed(2);
+    const when = d => new Date(d).toLocaleString(undefined, { weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
+
+    async function api(method, body) {
+      const res = await fetch('/api/requests', {
+        method,
+        headers: { 'x-edit-password': password, ...(body ? { 'content-type': 'application/json' } : {}) },
+        body: body ? JSON.stringify(body) : undefined,
+        cache: 'no-store'
+      });
+      if (res.status === 401) { lock('That password is not right.'); throw new Error('locked'); }
+      if (!res.ok) throw new Error('Request failed');
+      return res.status === 204 ? null : res.json();
+    }
+
+    async function unlock(pw) {
+      password = pw;
+      $('lock-err').textContent = 'Checking…';
+      try {
+        rows = await api('GET');
+      } catch (e) {
+        if (e.message !== 'locked') $('lock-err').textContent = 'Could not load requests. Check your connection and try again.';
+        return;
+      }
+      try { sessionStorage.setItem(PW_KEY, pw); } catch (e) {}
+      $('lock').hidden = true;
+      $('panel').hidden = false;
+      $('refresh').hidden = false;
+      $('lock-btn').hidden = false;
+      render();
+    }
+
+    function lock(message) {
+      password = '';
+      try { sessionStorage.removeItem(PW_KEY); } catch (e) {}
+      $('panel').hidden = true;
+      $('refresh').hidden = true;
+      $('lock-btn').hidden = true;
+      $('lock').hidden = false;
+      $('lock-err').textContent = message || '';
+      $('pw').value = '';
+      $('pw').focus();
+    }
+
+    function render() {
+      const counts = {
+        new: rows.filter(r => r.status !== 'done').length,
+        order: rows.filter(r => r.kind === 'order').length,
+        message: rows.filter(r => r.kind === 'message').length,
+        all: rows.length
+      };
+      const labels = { new: 'To do', order: 'Orders', message: 'Messages', all: 'All' };
+      $('tabs').innerHTML = Object.keys(labels).map(k =>
+        `<button type="button" class="tab ${filter === k ? 'on' : ''}" data-f="${k}">${labels[k]}${k === 'new' && counts.new ? `<b class="red" aria-label="${counts.new} new">${counts.new > 99 ? '99+' : counts.new}</b>` : `<b>${counts[k]}</b>`}</button>`).join('');
+      document.title = (counts.new ? `(${counts.new}) ` : '') + 'Customer requests · Next Layer';
+      $('summary').textContent = counts.new
+        ? `${counts.new} waiting for you · ${counts.order} order${counts.order === 1 ? '' : 's'} and ${counts.message} message${counts.message === 1 ? '' : 's'} total`
+        : 'All caught up!';
+
+      const shown = rows.filter(r => filter === 'all' ? true : filter === 'new' ? r.status !== 'done' : r.kind === filter);
+      if (!shown.length) {
+        $('list').innerHTML = `<div class="empty">${rows.length ? 'Nothing here.' : 'No orders or messages yet. They will show up here as soon as customers send them.'}</div>`;
+        return;
+      }
+      $('list').innerHTML = shown.map(card).join('');
+    }
+
+    function card(r) {
+      const done = r.status === 'done';
+      const isOrder = r.kind === 'order';
+      const contact = [
+        r.email ? `<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>` : '',
+        r.phone ? `<a href="tel:${esc(r.phone)}">${esc(r.phone)}</a>` : ''
+      ].join('');
+      let body = '';
+      if (isOrder) {
+        body = `<ul class="lines">${(r.items || []).map(i =>
+          `<li><span>${esc(i.name)} × ${esc(i.quantity)}${i.option ? `<span class="opt">${esc(i.option)}</span>` : ''}</span><strong>${money(i.price * i.quantity)}</strong></li>`).join('')}</ul>
+          <div class="total"><span>Total</span><span>${money(r.total)}</span></div>
+          ${r.meetupPlace || r.meetupTime ? `<div class="note-label">Meetup (cash, paid first)</div><div class="msgtext">${esc(r.meetupPlace || '')}${r.meetupTime ? ' — ' + esc(r.meetupTime) : ''}</div>` : ''}
+          ${r.message ? `<div class="note-label">Order notes</div><div class="msgtext">${esc(r.message)}</div>` : ''}`;
+      } else {
+        body = `<div class="msgtext">${esc(r.message)}</div>`;
+      }
+      return `<article class="item ${done ? 'done' : ''}">
+        <div class="row">
+          <div>
+            ${r.kind === 'prize'
+              ? `<span class="badge prize">🎉 Free print winner ${esc(r.orderNumber || '')}</span>`
+              : `<span class="badge ${isOrder ? '' : 'msg'}">${isOrder ? 'Order' + (r.orderNumber ? ' ' + esc(r.orderNumber) : '') : 'Message'}</span>`}
+            ${done ? '<span class="badge ok">Done</span>' : ''}
+          </div>
+          <span class="when">${esc(when(r.createdAt))}</span>
+        </div>
+        <div class="who">${esc(r.name)}</div>
+        <div class="contact">${contact || '<span class="when">No contact info</span>'}</div>
+        ${body}
+        <div class="actions">
+          <button type="button" class="small" data-act="${done ? 'undo' : 'done'}" data-id="${r.id}">${done ? 'Mark as to do' : '✓ Mark as done'}</button>
+          <button type="button" class="small danger" data-act="delete" data-id="${r.id}">Delete</button>
+        </div>
+      </article>`;
+    }
+
+    $('lock').addEventListener('submit', e => { e.preventDefault(); unlock($('pw').value); });
+    $('lock-btn').onclick = () => lock();
+    $('refresh').onclick = async () => { try { rows = await api('GET'); render(); } catch (e) {} };
+    // Check for new requests every minute while the page is open
+    setInterval(async () => {
+      if (!password || document.hidden) return;
+      try { rows = await api('GET'); render(); } catch (e) {}
+    }, 60000);
+    $('tabs').addEventListener('click', e => {
+      const t = e.target.closest('.tab');
+      if (t) { filter = t.dataset.f; render(); }
+    });
+    $('list').addEventListener('click', async e => {
+      const b = e.target.closest('button[data-act]');
+      if (!b) return;
+      const id = Number(b.dataset.id);
+      const act = b.dataset.act;
+      if (act === 'delete' && !confirm('Delete this for good? This cannot be undone.')) return;
+      b.disabled = true;
+      try {
+        if (act === 'delete') {
+          await api('DELETE', { id });
+          rows = rows.filter(r => r.id !== id);
+        } else {
+          const status = act === 'done' ? 'done' : 'new';
+          await api('PATCH', { id, status });
+          rows = rows.map(r => r.id === id ? { ...r, status } : r);
+        }
+        render();
+      } catch (err) {
+        if (err.message !== 'locked') { alert('That did not work. Please try again.'); b.disabled = false; }
+      }
+    });
+
+    let saved = '';
+    try { saved = sessionStorage.getItem(PW_KEY) || ''; } catch (e) {}
+    if (saved) unlock(saved); else $('pw').focus();
+  </script>
+</body>
+</html>
